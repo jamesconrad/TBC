@@ -30,13 +30,13 @@ int Console::Initialize(Vec2 Screen)
 	screenSize.Bottom = Screen.y - 1;
 
 	//Resize screen buffer
-	SetConsoleScreenBufferSize(hConsole, Screen.coord());
 	SetConsoleWindowInfo(hConsole, true, &screenSize);
+	SetConsoleScreenBufferSize(hConsole, Screen.coord());
 
 	hConsoleBack = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-	SetConsoleScreenBufferSize(hConsoleBack, Screen.coord());
 	SetConsoleWindowInfo(hConsoleBack, true, &screenSize);
-
+	SetConsoleScreenBufferSize(hConsoleBack, Screen.coord());
+	
 	return 0;
 }
 
@@ -45,9 +45,14 @@ void Console::Print(char* text, Vec2 topLeftCorner, Vec2 bottomRightCorner, int 
 	CHAR_INFO* res = new CHAR_INFO[strlen(text)];
 	ConvertString(text, res, hexColour);
 	SMALL_RECT frame = screenSize;
-	WriteConsoleOutput(hConsoleBack, res, bottomRightCorner.coord(), topLeftCorner.coord(), &frame);
+	frame.Right += topLeftCorner.x + bottomRightCorner.x;
+	frame.Left += topLeftCorner.x;
+	frame.Bottom += topLeftCorner.y + bottomRightCorner.x;
+	frame.Top += topLeftCorner.y;
+	WriteConsoleOutput(hConsoleBack, res, bottomRightCorner.coord(), { 0,0 }, &frame);
 	delete[] res;
 }
+
 void Console::Print(CHAR_INFO* text, Vec2 topLeftCorner, Vec2 bottomRightCorner)
 {
 	SMALL_RECT frame = screenSize;
@@ -56,7 +61,7 @@ void Console::Print(CHAR_INFO* text, Vec2 topLeftCorner, Vec2 bottomRightCorner)
 
 void Console::Clear()
 {
-	COORD coordScreen = { 0, 0 };    // home for the cursor 
+	COORD coordScreen = { 0, 0 };    // home for the cursor
 	DWORD cCharsWritten;
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	DWORD dwConSize;
