@@ -40,17 +40,17 @@ int Console::Initialize(Vec2 Screen)
 	return 0;
 }
 
-void Console::Print(char* text, Vec2 topLeftCorner, Vec2 bottomRightCorner, int hexColour)
+void Console::Print(const char* text, Vec2 topLeftCorner, Vec2 bottomRightCorner, int hexColour)
 {
-	CHAR_INFO* res = new CHAR_INFO[strlen(text)];
-	ConvertString(text, res, hexColour);
+	convString = new CHAR_INFO[strlen(text)];
+	ConvertString(text, convString, hexColour);
 	SMALL_RECT frame = screenSize;
 	frame.Right += topLeftCorner.x + bottomRightCorner.x;
 	frame.Left += topLeftCorner.x;
 	frame.Bottom += topLeftCorner.y + bottomRightCorner.x;
 	frame.Top += topLeftCorner.y;
-	WriteConsoleOutput(hConsoleBack, res, bottomRightCorner.coord(), { 0,0 }, &frame);
-	delete[] res;
+	WriteConsoleOutput(hConsoleBack, convString, bottomRightCorner.coord(), { 0,0 }, &frame);
+	delete[] convString;
 }
 
 void Console::Print(CHAR_INFO* text, Vec2 topLeftCorner, Vec2 bottomRightCorner)
