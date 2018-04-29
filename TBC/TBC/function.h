@@ -16,6 +16,8 @@ enum Colour
 	UNDERSCORE = 0x8000
 };
 
+enum Packet { USER_UPDATE, MESSAGE, LOBBY_CHANGE, LOBBY_JOIN, GAME_GTN, GAME_OFF, LOBBY_UPDATE};
+
 struct User
 {
 	short userID;
@@ -48,6 +50,8 @@ int statusColour(User::Status s)
 
 char keypress()
 {
+	bool isConsoleWindowFocussed = (GetConsoleWindow() == GetForegroundWindow());
+	if (!isConsoleWindowFocussed) return 2;
 	bool kp[256];
 	for (int i = 0; i < 256; i++)
 	{
